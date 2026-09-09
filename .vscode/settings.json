@@ -1,0 +1,8 @@
+{
+  "python.analysis.extraPaths": [
+    "/opt/ros/jazzy/lib/python3.12/site-packages",
+    "/opt/ros/jazzy/local/lib/python3.12/dist-packages"
+  ],
+  "files.associations": { "*.yaml": "yaml" },
+  "editor.rulers": [100]
+}
