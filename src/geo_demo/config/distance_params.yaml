@@ -1,0 +1,10 @@
+distance_publisher:
+  ros__parameters:
+    true_distance: 100.0
+    sigma: 0.02
+    rate_hz: 5.0
+
+distance_subscriber:
+  ros__parameters:
+    report_every: 20
+    
