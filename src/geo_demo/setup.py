@@ -25,6 +25,8 @@ setup(
     entry_points={
         'console_scripts': [
             'distance_publisher = geo_demo.distance_publisher:main',
+             'distance_subscriber = geo_demo.distance_subscriber:main',
     ],
+
     },
 )
