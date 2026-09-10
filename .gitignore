@@ -4,3 +4,6 @@ log/
 __pycache__/
 *.pyc
 *.egg-info/
+bags/
+frames.pdf
+frames.gv
