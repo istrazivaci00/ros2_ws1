@@ -27,6 +27,10 @@ class LidarSim(Node):
         self.declare_parameter('range_sigma', 0.02)
         self.declare_parameter('odom_scale_error', 0.02)
         self.declare_parameter('odom_yaw_error', 0.01)
+        self.declare_parameter('seed', 42)
+        self.declare_parameter('laps', 3.0)
+
+        self.gt_pub = self.create_publisher(PoseStamped, 'ground_truth_pose', 10)
 
         r = self.get_parameter('path_radius').value
         cy = r  # centar kruznice, tako da robot krece iz koordinatnog pocetka
@@ -48,7 +52,8 @@ class LidarSim(Node):
         self.odom = np.zeros(3)            # x, y, theta procenjeni odometrijom
         self.path = Path()
         self.path.header.frame_id = 'map'
-        self.rng = np.random.default_rng(42)
+        self.rng = np.random.default_rng(self.get_parameter('seed').value)
+        self.turned = 0.0
 
         hz = self.get_parameter('scan_hz').value
         self.dt = 1.0 / hz
@@ -153,6 +158,14 @@ class LidarSim(Node):
         self.path.poses.append(ps)
         self.path.header.stamp = stamp
         self.path_pub.publish(self.path)
+
+        self.gt_pub.publish(ps)
+
+        self.turned += dphi
+        if self.turned >= self.get_parameter('laps').value * 2.0 * math.pi:
+            self.timer.cancel()
+            self.get_logger().info(
+                f'zavrseno {self.get_parameter("laps").value} krugova — simulator stao')
 
 
 def main():

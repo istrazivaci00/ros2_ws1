@@ -15,6 +15,7 @@ setup(
         (os.path.join('share', package_name, 'launch'), glob('launch/*.launch.py')),
         (os.path.join('share', package_name, 'config'), glob('config/*.yaml')),
         (os.path.join('share', package_name, 'config', 'slam'), glob('config/slam/*.yaml')),
+        (os.path.join('share', package_name, 'rviz'), glob('rviz/*.rviz')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -33,6 +34,7 @@ setup(
              'distance_subscriber = geo_demo.distance_subscriber:main',
              'fake_odometry = geo_demo.fake_odometry:main',
              'lidar_sim = geo_demo.lidar_sim:main',
+             'pose_error = geo_demo.pose_error:main',
     ],
 
     },

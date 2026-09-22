@@ -7,3 +7,6 @@ __pycache__/
 bags/
 frames.pdf
 frames.gv
+results/
+frames*.pdf
+frames*.gv
