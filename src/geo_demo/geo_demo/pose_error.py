@@ -31,13 +31,15 @@ class PoseError(Node):
         self.declare_parameter('map_frame', 'map')
         self.declare_parameter('base_frame', 'base_link')
         self.declare_parameter('delay_s', 0.5)
+        self.last_rx = self.get_clock().now()
+        self.finished = False
 
         self.buf = Buffer()
         self.listener = TransformListener(self.buf, self)
         self.pending = deque()
 
         self.create_subscription(
-            PoseStamped, 'ground_truth_pose', lambda m: self.pending.append(m), 50)
+            PoseStamped, 'ground_truth_pose', self.on_pose, 50)
         self.timer = self.create_timer(0.2, self.process)
 
         path = os.path.expanduser(self.get_parameter('out_csv').value)
@@ -53,14 +55,28 @@ class PoseError(Node):
         self.max_e = 0.0
         self.get_logger().info(f'pose_error pise u {path}')
 
+    def on_pose(self, msg):
+        self.pending.append(msg)
+        self.last_rx = self.get_clock().now()
+
     def process(self):
         now = self.get_clock().now()
         delay = Duration(seconds=self.get_parameter('delay_s').value)
+
         while self.pending:
             msg = self.pending[0]
             if (now - Time.from_msg(msg.header.stamp)) < delay:
                 break
             self.record(self.pending.popleft())
+
+        if (not self.finished and not self.pending and self.n > 0
+                and (now - self.last_rx) > Duration(seconds=2.0)):
+            self.finished = True
+            rms = math.sqrt(self.sum_sq / self.n)
+            self.fh.flush()
+            self.get_logger().info(
+                f'GOTOVO  n={self.n}  RMS={rms * 100:.2f} cm  '
+                f'max={self.max_e * 100:.2f} cm')
 
     def record(self, msg):
         mf = self.get_parameter('map_frame').value
